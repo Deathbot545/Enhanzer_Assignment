@@ -1,0 +1,33 @@
+<div class="login-page">
+  <div class="login-box">
+    <h1>Hi</h1>
+
+    <form [formGroup]="loginForm" (ngSubmit)="submit()" novalidate>
+      <div class="field">
+        <label for="email">✉️</label>
+        <input id="email" type="email" placeholder="Email*" formControlName="email" />
+      </div>
+
+      <div class="field">
+        <label for="password">🔑</label>
+        <input
+          id="password"
+          [type]="showPassword ? 'text' : 'password'"
+          placeholder="Password*"
+          formControlName="password"
+        />
+        <button type="button" class="toggle-password" (click)="showPassword = !showPassword">
+          {{ showPassword ? '🙈' : '👁️' }}
+        </button>
+      </div>
+
+      @if (errorMessage) {
+        <p class="error">{{ errorMessage }}</p>
+      }
+
+      <button type="submit" class="login-btn" [disabled]="loginForm.invalid || loading">
+        {{ loading ? 'LOGGING IN...' : 'LOGIN' }}
+      </button>
+    </form>
+  </div>
+</div>

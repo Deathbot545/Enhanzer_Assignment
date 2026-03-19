@@ -1,0 +1,201 @@
+<div class="purchase-bill-container">
+  <div class="pb-header">
+    <div class="pb-title">
+      <h1>Purchase Bill</h1>
+      <p>Enter information for the Purchase Bill</p>
+    </div>
+    <div class="pb-actions">
+      <button type="button" class="icon-btn refresh-btn" title="Refresh">
+        <span>↻</span>
+      </button>
+      <button type="button" class="icon-btn add-btn" title="Add">
+        <span>+</span>
+      </button>
+      <button type="button" class="icon-btn check-btn" title="Save">
+        <span>✓</span>
+      </button>
+      <button type="button" class="icon-btn close-btn" (click)="logout()" title="Logout">
+        <span>✕</span>
+      </button>
+    </div>
+  </div>
+
+
+  <div class="pb-content">
+    <div class="pb-main">
+      <div class="pb-section">
+        <div class="section-tabs">
+          <button class="sub-tab active">Items</button>
+        </div>
+
+        <form [formGroup]="form" novalidate class="item-form">
+          <div class="form-row">
+            <div class="form-group-large">
+              <label>Item*</label>
+              <div class="autocomplete-container">
+                <input
+                  type="text"
+                  formControlName="item"
+                  (input)="onItemInput($event)"
+                  placeholder="Select item"
+                  class="form-input"
+                />
+                @if (filteredItems.length > 0) {
+                  <ul class="autocomplete-list">
+                    @for (item of filteredItems; track item) {
+                      <li (click)="selectItem(item)">{{ item }}</li>
+                    }
+                  </ul>
+                }
+              </div>
+            </div>
+
+            <div class="form-group-large">
+              <label>Batch*</label>
+              <select formControlName="batch" class="form-input">
+                <option value="">-- Select Batch --</option>
+                @for (location of locations; track location.location_Code) {
+                  <option [value]="location.location_Name">{{ location.location_Name }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Standard Cost</label>
+              <input type="number" min="0" step="0.01" formControlName="standardCost" class="form-input" />
+              <span class="value-display">0.00</span>
+            </div>
+
+            <div class="form-group">
+              <label>Standard Price</label>
+              <input type="number" min="0" step="0.01" formControlName="standardPrice" class="form-input" />
+              <span class="value-display">0.00</span>
+            </div>
+
+            <div class="form-group">
+              <label>Qty</label>
+              <input type="number" min="1" step="1" formControlName="quantity" class="form-input" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Discount</label>
+              <input type="number" min="0" max="100" step="0.01" formControlName="discount" class="form-input" />
+              <span class="value-display">0.00</span>
+            </div>
+
+            <div class="form-group">
+              <label>Total Cost</label>
+              <input type="text" [value]="totalCostDisplay | number: '1.2-2'" readonly class="form-input" />
+              <span class="value-display">{{ totalCostDisplay | number: '1.2-2' }}</span>
+            </div>
+
+            <div class="form-group">
+              <label>Total Selling</label>
+              <input type="text" [value]="totalSellingDisplay | number: '1.2-2'" readonly class="form-input" />
+              <span class="value-display">{{ totalSellingDisplay | number: '1.2-2' }}</span>
+            </div>
+
+            <button type="button" class="add-item-btn" (click)="addItem()" [disabled]="form.invalid">Add +</button>
+          </div>
+
+          @if (errorMessage) {
+            <p class="error-msg">{{ errorMessage }}</p>
+          }
+        </form>
+
+        @if (billItems.length > 0) {
+          <div class="items-table-wrapper">
+            <table class="items-table">
+              <thead>
+                <tr>
+                  <th>Item</th>
+                  <th>Batch</th>
+                  <th>Standard Cost</th>
+                  <th>Standard Price</th>
+                  <th>Qty</th>
+                  <th>Free Qty</th>
+                  <th>Discount</th>
+                  <th>Total Cost</th>
+                  <th>Total Selling</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (item of billItems; track item.id) {
+                  <tr>
+                    <td>{{ item.item }}</td>
+                    <td>{{ item.batch }}</td>
+                    <td>{{ item.standardCost | number: '1.2-2' }}</td>
+                    <td>{{ item.standardPrice | number: '1.2-2' }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>0</td>
+                    <td>{{ item.discount }}</td>
+                    <td>{{ item.totalCost | number: '1.2-2' }}</td>
+                    <td>{{ item.totalSelling | number: '1.2-2' }}</td>
+                    <td>
+                      <button type="button" class="delete-btn" (click)="removeItem(item.id)" title="Delete">×</button>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="pb-sidebar">
+      <div class="summary-card">
+        <h3>Summary</h3>
+
+        <div class="summary-section">
+          <h4>Item Summary</h4>
+          <div class="summary-row">
+            <span class="label">Total Items</span>
+            <span class="value">{{ totalItemsCount }}</span>
+          </div>
+          <div class="summary-row">
+            <span class="label">Total Qty</span>
+            <span class="value">{{ totalQuantitySum }}</span>
+          </div>
+        </div>
+
+        <div class="summary-section">
+          <h4>Financial Summary</h4>
+          <div class="summary-row">
+            <span class="label">Gross Total</span>
+            <span class="value">{{ grandTotalSelling | number: '1.2-2' }}</span>
+          </div>
+          <div class="summary-row">
+            <span class="label">Item Discount</span>
+            <span class="value">0.00</span>
+          </div>
+          <div class="summary-row">
+            <span class="label">Overall Discount</span>
+            <span class="value">0.00</span>
+          </div>
+          <div class="summary-row">
+            <span class="label">Total Before Tax</span>
+            <span class="value">{{ grandTotalCost | number: '1.2-2' }}</span>
+          </div>
+        </div>
+
+        <div class="summary-section">
+          <h4>Tax Summary</h4>
+          <div class="summary-row">
+            <span class="label">Total Tax</span>
+            <span class="value">0.00</span>
+          </div>
+        </div>
+
+        <div class="net-total">
+          <span>Net Total</span>
+          <span class="total-value">{{ grandTotalCost | number: '1.2-2' }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
