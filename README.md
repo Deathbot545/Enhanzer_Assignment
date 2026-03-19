@@ -78,28 +78,6 @@ On successful login:
 
 ---
 
-## 📸 Screenshots
-
-### How to Add Screenshots
-
-1. **Create a `screenshots` folder** in the repo root:
-   ```bash
-   mkdir screenshots
-   ```
-
-2. **Add your screenshots**:
-   - Save login page screenshot as: `screenshots/login-page.png`
-   - Save purchase bill page screenshot as: `screenshots/purchase-bill-page.png`
-
-3. **Update README** if needed (screenshots are already referenced below)
-
-4. **Commit and push**:
-   ```bash
-   git add screenshots/
-   git commit -m "Add application screenshots"
-   git push
-   ```
-
 ### Login Page
 ![Login Page](./screenshots/login-page.png)
 
